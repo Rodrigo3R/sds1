@@ -1,50 +1,67 @@
-import React, { useEffect, useState } from 'react';
-import './styles.css';
+import React, { useEffect, useState } from 'react'
 import axios from 'axios';
-import { RecordsResponse } from './types';
+import './styles.css';
+import { RecordsResponse } from "./types";
+import { formatDate } from './helpers';
+import Pagination from './Pagination';
+import { Link } from 'react-router-dom';
 
-const BASE_URL = 'http://localhost:8080';
+const BASE_URL = 'http://localhost:8080'
+
 
 const Records = () => {
+  const [recordsResponse, setRecordsResponse] = useState<RecordsResponse>();
+  const [activePage, setActivePage] = useState(0);
 
-    const [ recordsResponse, setRecordsResponse] = useState<RecordsResponse>();
-    console.log(recordsResponse);
+  useEffect(() => {
+    axios.get(`${BASE_URL}/records?linesPerPage=12&page=${activePage}`)
+    .then(response => setRecordsResponse(response.data));
+    
+  }, [activePage]);
 
-    useEffect(() => {
-        axios.get(`${BASE_URL}/records?linesPerPage=12`)
-        .then(response => setRecordsResponse(response.data));
-    }, []);
+  const handlePageChange = ( index: number) => {
+    setActivePage(index)
+  }
 
-    return (
+  return (
+    <div className="page-container">
+      <div className="filters-container records-actions">
+        <Link to="/charts">
+          <button className="action-filters">
+            VER GRÁFICO
+          </button>
+        </Link>
+      </div>
+      <table className="records-table" cellPadding="0" cellSpacing="0">
+        <thead>
+          <tr>
+            <th>INSTANTE</th>
+            <th>NOME</th>
+            <th>IDADE</th>
+            <th>PLATAFORMA</th>
+            <th>GÊNERO</th>
+            <th>TÍTULO DO GAME</th>
+          </tr>
+        </thead>
+        <tbody>
+          {recordsResponse?.content.map((record) => (
+            <tr key={record.id}>
+              <td>{rocord.moment}</td>
+              <td>{rocord.name}</td>
+              <td>{rocord.age}</td>
+              <td className="text-secondary">{rocord.gamePlatform}</td>
+              <td>{rocord.genreName}</td>
+              <td>{rocord.gameTitle}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <Pagination 
+      activePage={activePage}
+      goToPage={handlePageChange }
+      totalPages={recordsResponse?.totalPages}/>
+    </div>
+  )
+}
 
-        <div className="page-container">
-            <table className="records-table" cellPadding="0" cellSpacing="0">
-                <thead>
-                    <tr>
-                        <th>INSTANTE</th>
-                        <th>NOME</th>
-                        <th>IDADE</th>
-                        <th>PLATAFORMA</th>
-                        <th>GÊNERO</th>
-                        <th>TITULO DO GAME</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {recordsResponse?.content.map(record => (
-                        <tr key={record.id}>
-                            <td>20/08/2020 13:45</td>
-                            <td>dodrigo Rocha Rodrigues</td>
-                            <td>44</td>
-                            <td>Xbox</td>
-                            <td>Ação - Aventura</td>
-                            <td>The last of Us 2</td>
-                        </tr>
-                    ))}
-                                              
-                </tbody>
-            </table>
-        </div>
-    )
-};
-
-export default Records;
+export default Records
