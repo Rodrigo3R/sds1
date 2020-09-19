@@ -6,7 +6,7 @@ import { RectButton } from 'react-native-gesture-handler';
 const Home = () =>{
 
     const handleOnPress = () => {
-        Alert.alert('voce clicou no botao');
+       
     }
 
     return (
